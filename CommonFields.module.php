@@ -2,8 +2,14 @@
 
 namespace ProcessWire;
 
+use MenthaWeb\CommonFields\SiteOptions;
+
 class CommonFields extends WireData implements Module
 {
+
+    const MODULE_NAMESPACE = 'MenthaWeb\\CommonFields';
+
+
     public static function getModuleInfo()
     {
         return [
@@ -16,28 +22,67 @@ class CommonFields extends WireData implements Module
 
     public function ready()
     {
-        if (!wire('user')->isSuperuser()) {
+        $this->loadModuleNamespace();
+
+        if (!$this->user->isSuperuser()) {
             return;
         }
 
-        wire('templates')->getAll()->each(function($template) {
+        $siteOptions = new SiteOptions();
+        $siteOptions->init();
+
+        $this->templates->getAll()->each(function($template) {
             if ($template->name !== 'admin' && $template->name !== 'role' && $template->name !== 'user' && $template->name !== 'permission') {
                 $this->addFieldsToTemplate($template);
             }
         });
     }
 
+    private function loadModuleNamespace()
+    {
+        if (!$this->wire('classLoader')->hasNamespace(self::MODULE_NAMESPACE)) {
+            $srcPath = $this->wire('config')->paths->get($this) . 'src/';
+            $this->wire('classLoader')->addNamespace(self::MODULE_NAMESPACE, $srcPath);
+        }
+    }
+
     private function addFieldsToTemplate($template)
     {
-        $this->installSeoFields($template);
+        $this->installContentFields($template);
         $this->installPageOptionFields($template);
+        $this->installSeoFields($template);
+    }
+
+    private function installContentFields($template)
+    {
+        if (!$template->fields->get('lead')) {
+            if ($this->fields->get('lead')) {
+                $field = $this->fields->get('lead');
+            } else {
+                $field = new Field();
+                $field->setName('lead');
+                $field->setLabel('Lead');$field->setFieldtype('\\ProcessWire\\FieldtypeTextarea');
+                $field->set('inputfieldClass', 'InputfieldTextarea');
+                $field->set('contentType', 0);
+                $field->set('collapsed', 0);
+                $field->set('minlength', 0);
+                $field->set('maxlength', 0);
+                $field->set('showCount', 0);
+                $field->set('rows', 5);
+                $field->set('textformatters', 'TextformatterEntities');
+                $field->save();
+            }
+            $existing = $template->fields->get('title');
+            $template->fields->insertAfter($field, $existing);
+            $template->fields->save();
+        }
     }
 
     private function installPageOptionFields($template)
     {
         if (!$template->fields->get('pageOptions')) {
-            if (wire('fields')->get('pageOptions')) {
-                $field = wire('fields')->get('pageOptions');
+            if ($this->fields->get('pageOptions')) {
+                $field = $this->fields->get('pageOptions');
             } else {
                 $field = new Field();
                 $field->setName('pageOptions');
@@ -50,8 +95,8 @@ class CommonFields extends WireData implements Module
         }
 
         if (!$template->fields->get('showInMenu')) {
-            if (wire('fields')->get('showInMenu')) {
-                $field = wire('fields')->get('showInMenu');
+            if ($this->fields->get('showInMenu')) {
+                $field = $this->fields->get('showInMenu');
             } else {
                 $field = new Field();
                 $field->setName('showInMenu');
@@ -65,8 +110,8 @@ class CommonFields extends WireData implements Module
         }
 
         if (!$template->fields->get('navigationTitle')) {
-            if (wire('fields')->get('navigationTitle')) {
-                $field = wire('fields')->get('navigationTitle');
+            if ($this->fields->get('navigationTitle')) {
+                $field = $this->fields->get('navigationTitle');
             } else {
                 $field = new Field();
                 $field->setName('navigationTitle');
@@ -82,8 +127,8 @@ class CommonFields extends WireData implements Module
         }
 
         if (!$template->fields->get('pageOptions_END')) {
-            if (wire('fields')->get('pageOptions_END')) {
-                $field = wire('fields')->get('pageOptions_END');
+            if ($this->fields->get('pageOptions_END')) {
+                $field = $this->fields->get('pageOptions_END');
             } else {
                 $field = new Field();
                 $field->setName('pageOptions_END');
@@ -99,8 +144,8 @@ class CommonFields extends WireData implements Module
     private function installSeoFields($template)
     {
         if (!$template->fields->get('seoTab')) {
-            if (wire('fields')->get('seoTab')) {
-                $field = wire('fields')->get('seoTab');
+            if ($this->fields->get('seoTab')) {
+                $field = $this->fields->get('seoTab');
             } else {
                 $field = new Field();
                 $field->setName('seoTab');
@@ -113,8 +158,8 @@ class CommonFields extends WireData implements Module
         }
 
         if (!$template->fields->get('seoTitle')) {
-            if (wire('fields')->get('seoTitle')) {
-                $field = wire('fields')->get('seoTitle');
+            if ($this->fields->get('seoTitle')) {
+                $field = $this->fields->get('seoTitle');
             } else {
                 $field = new Field();
                 $field->setName('seoTitle');
@@ -129,8 +174,8 @@ class CommonFields extends WireData implements Module
         }
 
         if (!$template->fields->get('seoDescription')) {
-            if (wire('fields')->get('seoDescription')) {
-                $field = wire('fields')->get('seoDescription');
+            if ($this->fields->get('seoDescription')) {
+                $field = $this->fields->get('seoDescription');
             } else {
                 $field = new Field();
                 $field->setName('seoDescription');
@@ -152,8 +197,8 @@ class CommonFields extends WireData implements Module
         }
 
         if (!$template->fields->get('seoTab_END')) {
-            if (wire('fields')->get('seoTab_END')) {
-                $field = wire('fields')->get('seoTab_END');
+            if ($this->fields->get('seoTab_END')) {
+                $field = $this->fields->get('seoTab_END');
             } else {
                 $field = new Field();
                 $field->setName('seoTab_END');
