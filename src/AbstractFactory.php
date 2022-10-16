@@ -69,4 +69,14 @@ abstract class AbstractFactory extends WireData
         $field->setFieldtype($fieldConfig['type']);
         return $field;
     }
+
+    protected function setUncommonValues(Field $field, array $fieldConfig)
+    {
+        if (!empty($fieldConfig['autojoin']) && $fieldConfig['autojoin']) {
+            $field->flags = Field::flagAutojoin;
+        }
+        if (!empty($fieldConfig['global']) && $fieldConfig['global']) {
+            $field->flags = Field::flagGlobal;
+        }
+    }
 }

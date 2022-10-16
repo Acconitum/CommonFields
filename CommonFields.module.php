@@ -6,9 +6,7 @@ use MenthaWeb\CommonFields\SiteOptions;
 
 class CommonFields extends WireData implements Module
 {
-
     const MODULE_NAMESPACE = 'MenthaWeb\\CommonFields';
-
 
     public static function getModuleInfo()
     {
