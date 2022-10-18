@@ -31,11 +31,11 @@ class CommonFields extends WireData implements Module
         $siteOptions = new SiteOptions();
         $siteOptions->init();
 
-        $this->templates->getAll()->each(function($template) {
-            if ($template->name !== 'admin' && $template->name !== 'role' && $template->name !== 'user' && $template->name !== 'permission') {
-                $this->addFieldsToTemplate($template);
-            }
-        });
+        // $this->templates->getAll()->each(function($template) {
+        //     if ($template->name !== 'admin' && $template->name !== 'role' && $template->name !== 'user' && $template->name !== 'permission') {
+        //         $this->addFieldsToTemplate($template);
+        //     }
+        // });
     }
 
     private function loadModuleNamespace()
@@ -94,12 +94,12 @@ class CommonFields extends WireData implements Module
             $template->fields->save();
         }
 
-        if (!$template->fields->get('showInMenu')) {
-            if ($this->fields->get('showInMenu')) {
-                $field = $this->fields->get('showInMenu');
+        if (!$template->fields->get('showInNavigation')) {
+            if ($this->fields->get('showInNavigation')) {
+                $field = $this->fields->get('showInNavigation');
             } else {
                 $field = new Field();
-                $field->setName('showInMenu');
+                $field->setName('showInNavigation');
                 $field->setLabel('Show in main navigaiton');
                 $field->setFieldtype('\\ProcessWire\\FieldtypeToggle');
                 $field->save();
@@ -121,7 +121,7 @@ class CommonFields extends WireData implements Module
                 $field->set('textformatters', 'TextformatterEntities');
                 $field->save();
             }
-            $existing = $template->fields->get('showInMenu');
+            $existing = $template->fields->get('showInNavigation');
             $template->fields->insertAfter($field, $existing);
             $template->fields->save();
         }

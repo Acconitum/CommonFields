@@ -9,9 +9,21 @@ class NavigationApi extends WireData
 {
     public function hasSubNav(Page $page, Page $navItem)
     {
-        return (count($page->navItem->children) > 0 && $page->navItem->id !== 1);
+        if (count($page->navItem->children) === 0) {
+            return false;
+        }
+        foreach($page->navItem->children as $child) {
+            if ($this->isItemDisplayable($child)) {
+                return true;
+            }
+        }
+        return false;
     }
 
+    public function isItemDisplayable(Page $navItem)
+    {
+        return ($navItem->showInNavigation || $navItem->showInNavigation === "");
+    }
     public function getNavTitle(Page $navItem)
     {
         return (!empty($navItem->navigationTitle) ? $navItem->navigationTitle : $navItem->title);
