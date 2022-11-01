@@ -47,6 +47,12 @@ class CompanyFieldsFactory extends AbstractFactory
             'extensions' => 'gif jpg jpeg png svg'
         ],
         [
+            'name' => 'companyLogoNegative',
+            'type' => '\\ProcessWire\\FieldtypeImage',
+            'label' => 'Company Logo Negative',
+            'extensions' => 'gif jpg jpeg png svg'
+        ],
+        [
             'name' => 'companyTab_END',
             'type' => '\\ProcessWire\\FieldtypeFieldsetClose',
         ],

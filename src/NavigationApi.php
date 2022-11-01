@@ -7,12 +7,12 @@ use ProcessWire\WireData;
 
 class NavigationApi extends WireData
 {
-    public function hasSubNav(Page $page, Page $navItem)
+    public function hasSubNav(Page $navItem)
     {
-        if (count($page->navItem->children) === 0) {
+        if (!$navItem->hasChildren || $navItem->id === 1) {
             return false;
         }
-        foreach($page->navItem->children as $child) {
+        foreach($navItem->children as $child) {
             if ($this->isItemDisplayable($child)) {
                 return true;
             }
@@ -44,7 +44,7 @@ class NavigationApi extends WireData
             $classes[] = 'active-parent';
         }
 
-        if (count($page->navItem->children) > 0) {
+        if ($this->hasSubNav($navItem)) {
             $classes[] = 'has-subnav';
         }
 
@@ -57,5 +57,4 @@ class NavigationApi extends WireData
         $classesString .= implode(' ', $classes);
         return $classesString;
     }
-    
 }

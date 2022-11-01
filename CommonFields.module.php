@@ -3,6 +3,7 @@
 namespace ProcessWire;
 
 use MenthaWeb\CommonFields\NavigationApi;
+use MenthaWeb\CommonFields\AddressApi;
 use MenthaWeb\CommonFields\SiteOptions;
 
 class CommonFields extends WireData implements Module
@@ -23,13 +24,14 @@ class CommonFields extends WireData implements Module
     {
         $this->loadModuleNamespace();
         $this->wire('navigation', new NavigationApi());
+        $this->wire('address', new AddressApi());
 
         if (!$this->user->isSuperuser()) {
             return;
         }
 
-        $siteOptions = new SiteOptions();
-        $siteOptions->init();
+        // $siteOptions = new SiteOptions();
+        // $siteOptions->init();
 
         // $this->templates->getAll()->each(function($template) {
         //     if ($template->name !== 'admin' && $template->name !== 'role' && $template->name !== 'user' && $template->name !== 'permission') {

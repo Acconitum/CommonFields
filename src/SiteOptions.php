@@ -16,12 +16,16 @@ class SiteOptions extends WireData
         'name' => 'optionsTab_END',
         'type' => '\\ProcessWire\\FieldtypeFieldsetClose',
     ];
+    
     public function init()
     {
         $companyFieldsFactory = new CompanyFieldsFactory();
         $companyFieldsFactory->addOrUpdateFieldInTemplate($this->fieldSetOpen, $this->templates->get('home'));
 
         $companyFieldsFactory->create($this->templates->get('home'));
+
+        $socialMediaFieldsFactory = new SocialMediaFieldsFactory();
+        $socialMediaFieldsFactory->create($this->templates->get('home'));
 
         $companyFieldsFactory->addOrUpdateFieldInTemplate($this->fieldSetClose, $this->templates->get('home'));
     }
