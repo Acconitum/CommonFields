@@ -8,21 +8,30 @@ class AddressApi extends WireData
 {
     const EMAIL_CHAR_SET = '+-.0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz';
     
-    public function email($email)
+    public function email(string $email, string $text = '', array $classes = ['email'])
     {
-        $key = str_shuffle(self::EMAIL_CHAR_SET);
-        $cipherText = '';
+
+        $emailParts = explode('@', $email);
+        $user = current($emailParts);
+        $domainParts = explode('.', end($emailParts));
+        $domain = current($domainParts);
+        $path = explode('?', end($domainParts));
+        $topLevel = $path[0];
+        $parameter = (count($path) > 1 ? end($path) : ''); 
         $id = uniqid('e');
 
-        foreach(str_split($email, 1) as $index => $char) {
-            $cipherText .= $key[strpos(self::EMAIL_CHAR_SET,$email[$index])];
-        }
-        $script = 'var a="'.$key.'";var b=a.split("").sort().join("");var c="'.$cipherText.'";var d="";';
-        $script.= 'for(var e=0;e<c.length;e++)d+=b.charAt(a.indexOf(c.charAt(e)));';
-        $script.= 'document.getElementById("'.$id.'").innerHTML="<a class=\\"email\\" href=\\"mailto:"+d+"\\">"+d+"</a>"';
-        $script = "eval(\"".str_replace(array("\\",'"'),array("\\\\",'\"'), $script)."\")"; 
-        $script = '<script type="text/javascript">/*<![CDATA[*/'.$script.'/*]]>*/</script>';
-        return '<span id="'.$id.'">[javascript protected email address]</span>'.$script;
+        $script = '<script>';
+        $script .= 'var a="' . base64_encode($user) . '";';
+        $script .= 'var b="' . base64_encode($domain) . '";';
+        $script .= 'var c="' . base64_encode($topLevel) . '";';
+        $script .= 'var d="' . base64_encode($parameter) . '";';
+        $script .= 'var href=atob(a)+"@"+atob(b)+"."+atob(c)+(d !== "" ? "?"+decodeURIComponent(escape(window.atob(d))) : "");';
+        $script .= 'document.getElementById("'.$id.'").innerHTML="';
+        $script .= '<a class=\"' . implode(' ', $classes) . '\" href=\"mailto:"+href+"\">' . (empty($text) ? '"+atob(a)+"@"+atob(b)+"."+atob(c)+"' : addslashes($text)) . '</a>"';
+        $script .= '</script>';
+
+        echo '<span id="'.$id.'">[javascript protected email address]</span>';
+        echo $script;
     }
 
     public function phone($phone, $text = '')
