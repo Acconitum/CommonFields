@@ -6,16 +6,21 @@ use ProcessWire\WireData;
 
 class AddressApi extends WireData
 {
-    const EMAIL_CHAR_SET = '+-.0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz';
-    
     public function email(string $email, string $text = '', array $classes = ['email'])
     {
 
         $emailParts = explode('@', $email);
+
+
         $user = current($emailParts);
         $domainParts = explode('.', end($emailParts));
         $domain = current($domainParts);
-        $path = explode('?', end($domainParts));
+        if (count($domainParts) > 2) {
+            $end = $domainParts[1] . '.' . $domainParts[2];
+        } else {
+            $end = end($domainParts);
+        }
+        $path = explode('?', $end);
         $topLevel = $path[0];
         $parameter = (count($path) > 1 ? end($path) : ''); 
         $id = uniqid('e');
